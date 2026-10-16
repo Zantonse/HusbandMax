@@ -1,6 +1,6 @@
 # HusbandMax — Product Requirements Document
 
-**Status:** Draft v0.7
+**Status:** Draft v0.8
 **Owner:** Craig
 **Last updated:** 2026-10-16
 
@@ -103,8 +103,8 @@ Priority: **P0** = MVP, **P1** = fast follow, **P2** = later.
 - Has context from the Load Map, owned responsibilities, and the "Things She Cares About" notebook, with user control over what's shared.
 - Safety: recognizes signs of serious conflict, abuse, or mental health crisis and points to appropriate professional resources rather than coaching through them.
 
-### 6.9 Integrations (P1–P2)
-- Calendar read/write (Google, Apple) for scheduling owned tasks and seeing her commitments (with consent). **P1**
+### 6.9 Integrations (P0–P2)
+- **Calendar sync (P0):** two-way Google Calendar sync for both partners (both use Android). Owned tasks, coverage requests, date nights, and Family Sync land on the real calendar, and the app reads each partner's events (with consent) so the Family Sync agenda, coverage requests, and conflict checks reflect the actual week. A shared "Family" calendar holds baby logistics; personal calendars stay personal, with only busy/free shown unless shared.
 - Shared grocery/meal planning list. **P2**
 - Smart suggestions from calendar (e.g., "She has three late meetings this week. Take dinner Tuesday and Thursday?"). **P2**
 
@@ -154,6 +154,46 @@ With a 2-year-old, a lot of friction comes not from who does a task but from ass
 - Learner's own expectations count too. The app prompts him to name what he needs and assumes, so the conversation goes both ways rather than him silently absorbing everything.
 - The AI coach (6.8) can help him prepare for a hard conversation, such as asking for more sleep or raising a disagreement about discipline.
 
+### 6.11 Couple Time & Connection (P0)
+Being considerate isn't only logistics. This keeps the relationship itself from becoming one more thing she has to organize.
+- **Date nights:** a target cadence the couple agrees on (e.g., twice a month). The Learner owns the whole thing: picks the date, books the sitter, makes the reservation, and confirms with her. Nudges start early enough to line up a sitter.
+- **Date ideas bank:** at-home ideas for after bedtime (no sitter needed) and out-of-the-house ideas, tagged by cost and energy level, drawing on "Things She Cares About."
+- **Daily connection check-in:** a short prompt to actually ask how she's doing ("Ask about her day beyond the logistics. What was the best and hardest part?"), counted in the evening reflection.
+- **Appreciation:** a nudge to say one specific thank-you a day, plus the Partner's existing "noticed that" micro-acknowledgment going the other way.
+
+### 6.12 Quick Capture (P0)
+Mental load shows up at random moments, so capturing it must take two seconds or it won't happen.
+- **Android home-screen widget** and app shortcut: one tap to add a task, a "she mentioned" note, or an idea.
+- **Voice capture:** speak a note ("Daycare closed next Friday," "She'd love that candle from the farmers market"); the AI sorts it into a task, a notebook entry, a calendar item, or a Family Sync topic, and asks to confirm.
+- **Share from other apps:** share a daycare email, text, screenshot, or link into HusbandMax to turn it into a task with a due date.
+- **Inbox:** anything not sorted lands in an inbox reviewed in the morning digest, so nothing is lost.
+
+### 6.13 Inviting Your Partner (P0)
+How the app is introduced matters as much as the app. If it feels like homework for her, it fails.
+- **Learner-first:** the Learner uses the app solo for a week or two first (audit, a couple of owned responsibilities) so he arrives with something already taken off her plate, not a request.
+- **Guided invite:** a coached script for the conversation ("I've noticed how much you carry, and I want to take more of it on. This is how I'm keeping myself on track.") plus a short invite link.
+- **Light Partner onboarding:** under 3 minutes, with the audit and check-in optional and skippable. She sees what he's already owning on her first screen.
+- **Her controls:** she can pause notifications, skip check-ins, or step out of the app entirely without breaking his side.
+
+### 6.14 One-on-One Time With Your Kid (P1)
+- Weekly nudge for dedicated dad time, with age-appropriate ideas for a 2-year-old (park, library story time, swim, cooking together, a regular "Saturday morning with Dad" outing).
+- Milestone and memory prompts: capture firsts and share photos with her, and remember upcoming milestones (2.5-year checkup, potty training, toddler-bed move).
+- Doubles as personal-time coverage for her (6.10e).
+
+### 6.15 Long-Range Planning (P1)
+- An annual and seasonal calendar of things that sneak up: preschool research and enrollment deadlines, insurance and benefits renewals, taxes, car registration, holiday plans and travel booking, holiday cards, family photos, annual checkups.
+- Each item has a lead time and becomes an owned responsibility with nudges well in advance.
+- Yearly "look ahead" session in the Family Sync (e.g., each January and before summer).
+
+### 6.16 Extended Family (P1)
+- Track grandparents, in-laws, siblings, and close friends: birthdays, anniversaries, kids' names, and preferences, feeding gift planning.
+- Plan visits and holidays: who's hosting, travel logistics, which family each holiday goes to, and what she needs to feel supported during in-law visits.
+- Nudges to stay in touch with his own side of the family, so that work doesn't default to her.
+
+### 6.17 Money Check-ins (P2)
+- A light monthly money conversation added to the Family Sync: upcoming big expenses (childcare, holidays, car), savings goals, and who's handling which bills.
+- No bank connections in this phase; it's a structured conversation and a short list of money responsibilities with owners, not budgeting software.
+
 ## 7. Key user flows
 
 1. **First week:** Install → short intro to mental load (2 min) → solo audit → Load Map → pick first 2 responsibilities → invite partner (optional) → first daily lesson.
@@ -179,7 +219,7 @@ Supporting metrics:
 - **Backend: Firebase** (decided). A hosted backend is needed because two people on separate devices share the same household data, and nudges must be sent on a schedule even when the app is closed. Firebase covers it with Firestore (database, live sync between both phones, offline cache), Firebase Auth (sign-in for Craig and his wife), Security Rules (keep the Learner's private notebook and reflections private), and scheduled Cloud Functions (nudges, weekly check-in prompts). Scheduled functions require the pay-as-you-go Blaze plan; at one household's usage this should stay within the free quota, but set a budget alert.
 - **Notifications:** Firebase Cloud Messaging (via Expo push) triggered by scheduled Cloud Functions.
 - **AI:** Claude API for the coach chat, lesson personalization, and weekly summaries.
-- **Data model (initial, Firestore):** `households/{id}` with subcollections `members`, `domains`, `responsibilities` (owner, cadence, lead_time, playbook), `taskCycles`, `nudges`, `checkins`, `logisticsBoard`, `contingencyPlans`, `familySyncs`, `agreements`, `personalActivities`, `coverageRequests`, `expectationChecks` (each partner's answers stay hidden until both submit); per-user private data under `users/{uid}`: `reflections`, `partnerNotes` (the "Things She Cares About" notebook), `lessonProgress`. Lesson content lives in a top-level `lessons` collection. The Claude API key stays server-side in Cloud Functions, never in the app.
+- **Data model (initial, Firestore):** `households/{id}` with subcollections `members`, `domains`, `responsibilities` (owner, cadence, lead_time, playbook), `taskCycles`, `nudges`, `checkins`, `logisticsBoard`, `contingencyPlans`, `familySyncs`, `agreements`, `personalActivities`, `coverageRequests`, `dateNights`, `captureInbox`, `familyContacts`, `annualItems`, `expectationChecks` (each partner's answers stay hidden until both submit); per-user private data under `users/{uid}`: `reflections`, `partnerNotes` (the "Things She Cares About" notebook), `lessonProgress`. Lesson content lives in a top-level `lessons` collection. The Claude API key stays server-side in Cloud Functions, never in the app.
 
 ## 10. Privacy, trust, and tone
 
@@ -193,8 +233,8 @@ Supporting metrics:
 
 | Phase | Scope | Goal |
 |---|---|---|
-| **1. MVP (Craig's household)** | Web app **and** Android app from day one, one shared codebase. Learner: audit, Load Map, ownership plan, nudges, daily lesson, reflection, notebook. Partner: invite, audit, handoffs, weekly check-in. Launch domains: Kids, Meals, Gifts, Home admin, Social (shared). | Dogfood for 6–8 weeks; validate the daily loop and that Partner-reported load improves. |
-| **2. Coach** | AI coach chat, calendar integration, progress insights. | Deepen engagement and personalization. |
+| **1. MVP (Craig's household)** | Web app **and** Android app from day one, one shared codebase. Learner: audit, Load Map, ownership plan, nudges, daily lesson, reflection, notebook. Partner: guided invite, audit, handoffs, weekly check-in. Co-parenting (Family Sync, Logistics Board, coverage, expectations), couple time and date nights, quick capture (widget, voice, share), and Google Calendar sync. Launch domains: Kids, Meals, Gifts, Home admin, Social (shared). | Dogfood for 6–8 weeks; validate the daily loop and that Partner-reported load improves. |
+| **2. Coach** | Dad time, long-range planning, extended family. AI coach chat, progress insights. | Deepen engagement and personalization. |
 | **3. Share with other husbands** | Multi-household onboarding, generic starter library, more content tracks, smart calendar suggestions. | Open to other couples once it works in Craig's household. |
 
 ## 12. Risks
