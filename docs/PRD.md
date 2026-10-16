@@ -1,6 +1,6 @@
 # HusbandMax — Product Requirements Document
 
-**Status:** Draft v0.4
+**Status:** Draft v0.5
 **Owner:** Craig
 **Last updated:** 2026-10-16
 
@@ -78,7 +78,7 @@ Priority: **P0** = MVP, **P1** = fast follow, **P2** = later.
 - Daily digest (morning) plus a small number of time-sensitive pushes. User sets quiet hours and a max-per-day cap.
 
 ### 6.4 Consideration Coach (P0)
-- Daily 2-minute lesson or prompt, organized in tracks (e.g., *Foundations of mental load*, *Noticing*, *Emotional labor*, *Planning ahead*, *Thoughtful gestures*, *Repair after a miss*).
+- Daily 2-minute lesson or prompt, organized in tracks (e.g., *Foundations of mental load*, *Noticing*, *Emotional labor*, *Planning ahead*, *Thoughtful gestures*, *Repair after a miss*, *Talking as co-parents*).
 - **Daily practice prompt:** one small, concrete action ("Ask her about the thing she was worried about yesterday").
 - **Evening reflection** (30 seconds): Did I notice something today without being told? What did I own end to end?
 - **Content approach:** an original HusbandMax curriculum, drafted with AI and reviewed and approved by Craig before it ships. Lessons draw on established ideas (e.g., Eve Rodsky's *Fair Play* split of conception/planning/execution, Gottman's "bids for connection") with attribution, but don't reproduce any book's material.
@@ -108,12 +108,49 @@ Priority: **P0** = MVP, **P1** = fast follow, **P2** = later.
 - Shared grocery/meal planning list. **P2**
 - Smart suggestions from calendar (e.g., "She has three late meetings this week. Take dinner Tuesday and Thursday?"). **P2**
 
+### 6.10 Co-Parenting Communication: Logistics and Expectations (P0)
+
+With a 2-year-old, a lot of friction comes not from who does a task but from assumptions nobody said out loud: who's handling pickup, what "watching the baby" includes, whether Saturday morning is free time or family time. This feature gives the couple a light, structured way to talk about baby logistics and expectations before they turn into frustration.
+
+**a) Weekly Family Sync (P0)**
+- A 10–15 minute weekly ritual (e.g., Sunday evening), led by the Learner. He runs the meeting so she isn't the one organizing it.
+- The app builds the agenda automatically from the week ahead: daycare drop-off/pickup, appointments, either parent's late nights or travel, babysitter needs, meals, and anything flagged in the Partner check-in.
+- Standard agenda: (1) the week's logistics and who owns each, (2) any expectation to talk about, (3) one thing each person needs this week (rest, a workout, time with friends), (4) one appreciation.
+- Output is a short "who's doing what this week" summary both partners can see.
+
+**b) Baby Logistics Board (P0)**
+- A shared, at-a-glance view of the recurring baby logistics and the default owner of each: drop-off, pickup, bath, bedtime, night wake-ups, morning shift, weekend mornings, doctor visits, daycare communication, packing the daycare bag, restocking diapers and wipes, and outgrown clothes.
+- **Contingency plans**, agreed ahead of time so nobody scrambles: sick day (who stays home, backup care), daycare closure, one parent traveling, both parents sick.
+- Changes during the week are proposed, not assumed: "Can you take pickup Thursday?" goes to the partner for a one-tap yes or no.
+
+**c) Expectations Check (P0)**
+- A guided exercise where each partner privately answers short prompts about their expectations, and the app then shows where they match and where they differ. Nothing is shown until both have answered.
+- Starter topics for a toddler household:
+  - Night wake-ups, early mornings, and sleep-ins
+  - What "on duty" means (just supervising, or also cleaning up, meals, and laundry)
+  - Free time for each parent and how it's requested
+  - Screen time, food, discipline, and routines
+  - Handling grandparents, babysitters, and outside advice
+  - Weekend plans and social commitments with a toddler
+  - Upcoming transitions: potty training, toddler bed, preschool, possibly a second child
+- Differences become discussion items for the next Family Sync, with suggested conversation openers.
+- Re-run every few months or at a major transition, since expectations shift as the child grows.
+
+**d) Our Agreements (P0)**
+- A short shared list of what the couple has decided ("Craig owns daycare communication," "Whoever does bedtime gets the next morning off," "Sitter booked at least a week ahead"), so decisions don't have to be renegotiated or remembered by one person.
+- Each agreement can have an optional review date.
+
+**e) Communication coaching (P0 lessons, P1 AI coach)**
+- A lesson track, *Talking as co-parents*: raising an expectation without blame, asking instead of assuming, confirming logistics in writing, handing off in the moment ("She napped at 1, she's had lunch, she needs a diaper soon"), and repairing after a dropped handoff.
+- Learner's own expectations count too. The app prompts him to name what he needs and assumes, so the conversation goes both ways rather than him silently absorbing everything.
+- The AI coach (6.8) can help him prepare for a hard conversation, such as asking for more sleep or raising a disagreement about discipline.
+
 ## 7. Key user flows
 
 1. **First week:** Install → short intro to mental load (2 min) → solo audit → Load Map → pick first 2 responsibilities → invite partner (optional) → first daily lesson.
 2. **Daily loop:** Morning digest (owned tasks due, one anticipation nudge, one practice prompt) → do things through the day → 30-second evening reflection.
 3. **Handoff:** Learner proposes taking over a responsibility → Partner gets a one-tap "Yes, and here's anything I'd want you to know" → responsibility moves to Learner with playbook.
-4. **Weekly loop:** Partner check-in → Learner gets a weekly review: what went well, what slipped, one focus for next week.
+4. **Weekly loop:** Partner check-in → Learner gets a weekly review: what went well, what slipped, one focus for next week → Learner runs the Weekly Family Sync using the auto-built agenda → updated Baby Logistics Board for the week.
 
 ## 8. Success metrics
 
@@ -133,7 +170,7 @@ Supporting metrics:
 - **Backend: Firebase** (decided). A hosted backend is needed because two people on separate devices share the same household data, and nudges must be sent on a schedule even when the app is closed. Firebase covers it with Firestore (database, live sync between both phones, offline cache), Firebase Auth (sign-in for Craig and his wife), Security Rules (keep the Learner's private notebook and reflections private), and scheduled Cloud Functions (nudges, weekly check-in prompts). Scheduled functions require the pay-as-you-go Blaze plan; at one household's usage this should stay within the free quota, but set a budget alert.
 - **Notifications:** Firebase Cloud Messaging (via Expo push) triggered by scheduled Cloud Functions.
 - **AI:** Claude API for the coach chat, lesson personalization, and weekly summaries.
-- **Data model (initial, Firestore):** `households/{id}` with subcollections `members`, `domains`, `responsibilities` (owner, cadence, lead_time, playbook), `taskCycles`, `nudges`, `checkins`; per-user private data under `users/{uid}`: `reflections`, `partnerNotes` (the "Things She Cares About" notebook), `lessonProgress`. Lesson content lives in a top-level `lessons` collection. The Claude API key stays server-side in Cloud Functions, never in the app.
+- **Data model (initial, Firestore):** `households/{id}` with subcollections `members`, `domains`, `responsibilities` (owner, cadence, lead_time, playbook), `taskCycles`, `nudges`, `checkins`, `logisticsBoard`, `contingencyPlans`, `familySyncs`, `agreements`, `expectationChecks` (each partner's answers stay hidden until both submit); per-user private data under `users/{uid}`: `reflections`, `partnerNotes` (the "Things She Cares About" notebook), `lessonProgress`. Lesson content lives in a top-level `lessons` collection. The Claude API key stays server-side in Cloud Functions, never in the app.
 
 ## 10. Privacy, trust, and tone
 
