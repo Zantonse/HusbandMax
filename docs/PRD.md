@@ -1,6 +1,6 @@
 # HusbandMax — Product Requirements Document
 
-**Status:** Draft v0.5
+**Status:** Draft v0.6
 **Owner:** Craig
 **Last updated:** 2026-10-16
 
@@ -140,7 +140,16 @@ With a 2-year-old, a lot of friction comes not from who does a task but from ass
 - A short shared list of what the couple has decided ("Craig owns daycare communication," "Whoever does bedtime gets the next morning off," "Sitter booked at least a week ahead"), so decisions don't have to be renegotiated or remembered by one person.
 - Each agreement can have an optional review date.
 
-**e) Communication coaching (P0 lessons, P1 AI coach)**
+**e) Personal Time & Coverage (P0)**
+- Each parent keeps a list of their own regular activities, with usual day, time, and how often (e.g., her Pilates Tuesdays 6pm and Saturdays 9am, his tennis Thursday evenings or weekend mornings).
+- **Coverage requests:** booking a one-off event ("Pilates Saturday 9–10:30") sends the other parent a one-tap request: "Can you have the baby?" They can answer yes, no, or suggest another time. A yes puts it on the Logistics Board, so the coverage is explicit and not assumed.
+- **Recurring slots:** standing activities can be agreed once in the Family Sync ("Tuesday night is her Pilates night") and then covered automatically each week, with a reminder to the covering parent that day.
+- **Conflict check:** if both parents want the same slot, or an activity clashes with a baby logistic (pickup, bedtime) or a family event, the app flags it when the request is made and suggests alternatives, rather than leaving it to be found out on the day.
+- **Proactive offers:** the Learner gets nudges to *offer* her time before she has to ask, e.g., "She hasn't made it to Pilates in two weeks. Offer to take Saturday morning?" This shifts the mental load of arranging her own break off of her.
+- **Balance view:** a gentle monthly look at whether both parents are getting regular personal time. It shows each person's time to themselves, not a tally of favors owed, and gives the Learner a prompt if hers is falling behind.
+- Family Sync agenda item (3), "one thing each person needs this week," feeds straight into this.
+
+**f) Communication coaching (P0 lessons, P1 AI coach)**
 - A lesson track, *Talking as co-parents*: raising an expectation without blame, asking instead of assuming, confirming logistics in writing, handing off in the moment ("She napped at 1, she's had lunch, she needs a diaper soon"), and repairing after a dropped handoff.
 - Learner's own expectations count too. The app prompts him to name what he needs and assumes, so the conversation goes both ways rather than him silently absorbing everything.
 - The AI coach (6.8) can help him prepare for a hard conversation, such as asking for more sleep or raising a disagreement about discipline.
@@ -170,7 +179,7 @@ Supporting metrics:
 - **Backend: Firebase** (decided). A hosted backend is needed because two people on separate devices share the same household data, and nudges must be sent on a schedule even when the app is closed. Firebase covers it with Firestore (database, live sync between both phones, offline cache), Firebase Auth (sign-in for Craig and his wife), Security Rules (keep the Learner's private notebook and reflections private), and scheduled Cloud Functions (nudges, weekly check-in prompts). Scheduled functions require the pay-as-you-go Blaze plan; at one household's usage this should stay within the free quota, but set a budget alert.
 - **Notifications:** Firebase Cloud Messaging (via Expo push) triggered by scheduled Cloud Functions.
 - **AI:** Claude API for the coach chat, lesson personalization, and weekly summaries.
-- **Data model (initial, Firestore):** `households/{id}` with subcollections `members`, `domains`, `responsibilities` (owner, cadence, lead_time, playbook), `taskCycles`, `nudges`, `checkins`, `logisticsBoard`, `contingencyPlans`, `familySyncs`, `agreements`, `expectationChecks` (each partner's answers stay hidden until both submit); per-user private data under `users/{uid}`: `reflections`, `partnerNotes` (the "Things She Cares About" notebook), `lessonProgress`. Lesson content lives in a top-level `lessons` collection. The Claude API key stays server-side in Cloud Functions, never in the app.
+- **Data model (initial, Firestore):** `households/{id}` with subcollections `members`, `domains`, `responsibilities` (owner, cadence, lead_time, playbook), `taskCycles`, `nudges`, `checkins`, `logisticsBoard`, `contingencyPlans`, `familySyncs`, `agreements`, `personalActivities`, `coverageRequests`, `expectationChecks` (each partner's answers stay hidden until both submit); per-user private data under `users/{uid}`: `reflections`, `partnerNotes` (the "Things She Cares About" notebook), `lessonProgress`. Lesson content lives in a top-level `lessons` collection. The Claude API key stays server-side in Cloud Functions, never in the app.
 
 ## 10. Privacy, trust, and tone
 
