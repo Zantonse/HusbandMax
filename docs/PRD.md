@@ -1,6 +1,6 @@
 # HusbandMax — Product Requirements Document
 
-**Status:** Draft v0.3
+**Status:** Draft v0.4
 **Owner:** Craig
 **Last updated:** 2026-10-16
 
@@ -129,11 +129,11 @@ Supporting metrics:
 ## 9. Platform and technical approach (proposed)
 
 - **Client:** Web and phone from day one. Proposed: React Native (Expo) with Expo Router, which builds iOS, Android, and web from one codebase. The Partner can use the web version without installing anything.
-- **Built for one household, ready for many:** v1 serves Craig's household only, but the data model is multi-household (everything is scoped to a `household_id` with row-level security) so it can open to other husbands later without a rewrite.
-- **Backend:** A hosted backend is needed because two people on separate devices share the same household data, and nudges must be sent on a schedule even when the app is closed. Proposed: Supabase (Postgres, auth, row-level security, scheduled edge functions), since it covers all of that in one service. Firebase or a small custom API on a hosted Postgres would also work; the choice is pending Craig's call.
-- **Notifications:** Expo push + scheduled jobs for nudges.
+- **Built for one household, ready for many:** v1 serves Craig's household only, but the data model is multi-household (all data lives under `households/{householdId}`, enforced by Firestore security rules) so it can open to other husbands later without a rewrite.
+- **Backend: Firebase** (decided). A hosted backend is needed because two people on separate devices share the same household data, and nudges must be sent on a schedule even when the app is closed. Firebase covers it with Firestore (database, live sync between both phones, offline cache), Firebase Auth (sign-in for Craig and his wife), Security Rules (keep the Learner's private notebook and reflections private), and scheduled Cloud Functions (nudges, weekly check-in prompts). Scheduled functions require the pay-as-you-go Blaze plan; at one household's usage this should stay within the free quota, but set a budget alert.
+- **Notifications:** Firebase Cloud Messaging (via Expo push) triggered by scheduled Cloud Functions.
 - **AI:** Claude API for the coach chat, lesson personalization, and weekly summaries.
-- **Data model (initial):** `households`, `users`, `domains`, `responsibilities` (owner, cadence, lead_time, playbook), `task_cycles`, `nudges`, `lessons`, `lesson_progress`, `reflections`, `partner_notes` (the "Things She Cares About" notebook), `checkins`.
+- **Data model (initial, Firestore):** `households/{id}` with subcollections `members`, `domains`, `responsibilities` (owner, cadence, lead_time, playbook), `taskCycles`, `nudges`, `checkins`; per-user private data under `users/{uid}`: `reflections`, `partnerNotes` (the "Things She Cares About" notebook), `lessonProgress`. Lesson content lives in a top-level `lessons` collection. The Claude API key stays server-side in Cloud Functions, never in the app.
 
 ## 10. Privacy, trust, and tone
 
@@ -168,7 +168,8 @@ Supporting metrics:
 - **Household:** One child, age 2.
 - **Lessons:** Original curriculum, drafted with AI and reviewed by Craig.
 - **Tone:** Earnest coach.
+- **Backend:** Firebase (Craig's free Supabase slot is already used by another app).
 
 ## 14. Open questions for Craig
 
-1. **Backend:** Supabase (recommended), Firebase, or a custom API? See section 9.
+None right now. Next step is to scaffold the app.
