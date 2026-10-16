@@ -1,6 +1,6 @@
 # HusbandMax — Product Requirements Document
 
-**Status:** Draft v0.2
+**Status:** Draft v0.3
 **Owner:** Craig
 **Last updated:** 2026-10-16
 
@@ -64,7 +64,7 @@ Priority: **P0** = MVP, **P1** = fast follow, **P2** = later.
 - Each partner marks, separately, who currently owns each responsibility (Me / Partner / Shared / Nobody) and how much it weighs on them. The Partner's side can be done in ~5 minutes or skipped.
 - Output: a **Load Map** showing the current split by domain, with mismatches highlighted (e.g., he thinks it's "Shared," she thinks it's hers).
 - Single-player mode: Learner can complete the audit alone, with the app guiding him to estimate honestly, and invite his partner later.
-- **Launch domains (v1 focus):** Kids, Meals, Gifts & occasions, and Home admin are seeded first and suggested for early handoffs. Social calendar is seeded as **Shared**, since Craig already carries part of it; the audit should split it into specific responsibilities (e.g., "RSVPs and kid birthday parties" vs. "planning our weekends with friends") to find the parts still sitting with her.
+- **Launch domains (v1 focus):** Kids, Meals, Gifts & occasions, and Home admin are seeded first and suggested for early handoffs. The Kids domain is tuned for **one toddler (age 2)**: daycare/childcare logistics, pediatrician well visits and vaccines, sleep and nap routines, clothes and diaper sizing, activities and playdates, and milestone prep (potty training, toddler-bed move). Social calendar is seeded as **Shared**, since Craig already carries part of it; the audit should split it into specific responsibilities (e.g., "RSVPs and kid birthday parties" vs. "planning our weekends with friends") to find the parts still sitting with her.
 
 ### 6.2 Ownership Plan (P0)
 - App suggests 2–3 responsibilities to take over first, favoring ones that are high-weight for her, recurring, and achievable.
@@ -81,7 +81,7 @@ Priority: **P0** = MVP, **P1** = fast follow, **P2** = later.
 - Daily 2-minute lesson or prompt, organized in tracks (e.g., *Foundations of mental load*, *Noticing*, *Emotional labor*, *Planning ahead*, *Thoughtful gestures*, *Repair after a miss*).
 - **Daily practice prompt:** one small, concrete action ("Ask her about the thing she was worried about yesterday").
 - **Evening reflection** (30 seconds): Did I notice something today without being told? What did I own end to end?
-- Content grounded in established ideas (e.g., Eve Rodsky's *Fair Play* concept of conception/planning/execution, Gottman's "bids for connection"), with attribution and licensing reviewed (see Open Questions).
+- **Content approach:** an original HusbandMax curriculum, drafted with AI and reviewed and approved by Craig before it ships. Lessons draw on established ideas (e.g., Eve Rodsky's *Fair Play* split of conception/planning/execution, Gottman's "bids for connection") with attribution, but don't reproduce any book's material.
 
 ### 6.5 "Things She Cares About" Memory (P0)
 - A private notebook of what matters to her: preferences, upcoming events, stressors she's mentioned, favorite things, sizes, people's names.
@@ -130,7 +130,7 @@ Supporting metrics:
 
 - **Client:** Web and phone from day one. Proposed: React Native (Expo) with Expo Router, which builds iOS, Android, and web from one codebase. The Partner can use the web version without installing anything.
 - **Built for one household, ready for many:** v1 serves Craig's household only, but the data model is multi-household (everything is scoped to a `household_id` with row-level security) so it can open to other husbands later without a rewrite.
-- **Backend:** Supabase (Postgres, auth, row-level security, edge functions) for speed of building.
+- **Backend:** A hosted backend is needed because two people on separate devices share the same household data, and nudges must be sent on a schedule even when the app is closed. Proposed: Supabase (Postgres, auth, row-level security, scheduled edge functions), since it covers all of that in one service. Firebase or a small custom API on a hosted Postgres would also work; the choice is pending Craig's call.
 - **Notifications:** Expo push + scheduled jobs for nudges.
 - **AI:** Claude API for the coach chat, lesson personalization, and weekly summaries.
 - **Data model (initial):** `households`, `users`, `domains`, `responsibilities` (owner, cadence, lead_time, playbook), `task_cycles`, `nudges`, `lessons`, `lesson_progress`, `reflections`, `partner_notes` (the "Things She Cares About" notebook), `checkins`.
@@ -140,7 +140,7 @@ Supporting metrics:
 - The "Things She Cares About" notebook and reflections are **private to the Learner by default.** Nothing is shared with the Partner without an explicit action.
 - Partner check-ins are visible only to the household.
 - No selling or ad use of relationship data. Data export and full deletion are available.
-- Tone: warm, direct, a little humor, never preachy or shaming. Framing is "becoming the partner you want to be," not "you're failing."
+- Tone: **earnest coach**. Warm, sincere, and direct; encouraging without jokes getting in the way; never preachy or shaming. Framing is "becoming the partner you want to be," not "you're failing."
 - Avoid gamification that turns care into points-for-rewards with the Partner as judge.
 
 ## 11. Release plan
@@ -165,10 +165,10 @@ Supporting metrics:
 - **Partner involvement:** Craig's wife will use the Partner side (audit, handoffs, weekly check-in). Single-player mode stays as a fallback for future users.
 - **Platform:** Web and phone app in the first version.
 - **Launch domains:** Kids, Meals, Gifts & occasions, Home admin, and Social calendar (partly owned by Craig already).
+- **Household:** One child, age 2.
+- **Lessons:** Original curriculum, drafted with AI and reviewed by Craig.
+- **Tone:** Earnest coach.
 
 ## 14. Open questions for Craig
 
-1. **Stack:** OK with React Native/Expo + Supabase + Claude? (Supabase is already connected to this project.)
-2. **Content source:** Should lessons be original, AI-generated and reviewed by you, or based on a specific book/framework you like (e.g., *Fair Play*)?
-3. **Tone:** Earnest coach, buddy with jokes, or no-nonsense drill sergeant?
-4. **Kids:** How many, and roughly what ages? This shapes the Kids starter templates (school forms, activities, pediatrician, etc.).
+1. **Backend:** Supabase (recommended), Firebase, or a custom API? See section 9.
