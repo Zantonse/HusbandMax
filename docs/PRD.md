@@ -1,6 +1,6 @@
 # HusbandMax — Product Requirements Document
 
-**Status:** Draft v0.1
+**Status:** Draft v0.2
 **Owner:** Craig
 **Last updated:** 2026-10-16
 
@@ -64,6 +64,7 @@ Priority: **P0** = MVP, **P1** = fast follow, **P2** = later.
 - Each partner marks, separately, who currently owns each responsibility (Me / Partner / Shared / Nobody) and how much it weighs on them. The Partner's side can be done in ~5 minutes or skipped.
 - Output: a **Load Map** showing the current split by domain, with mismatches highlighted (e.g., he thinks it's "Shared," she thinks it's hers).
 - Single-player mode: Learner can complete the audit alone, with the app guiding him to estimate honestly, and invite his partner later.
+- **Launch domains (v1 focus):** Kids, Meals, Gifts & occasions, and Home admin are seeded first and suggested for early handoffs. Social calendar is seeded as **Shared**, since Craig already carries part of it; the audit should split it into specific responsibilities (e.g., "RSVPs and kid birthday parties" vs. "planning our weekends with friends") to find the parts still sitting with her.
 
 ### 6.2 Ownership Plan (P0)
 - App suggests 2–3 responsibilities to take over first, favoring ones that are high-weight for her, recurring, and achievable.
@@ -127,7 +128,8 @@ Supporting metrics:
 
 ## 9. Platform and technical approach (proposed)
 
-- **Client:** Mobile-first. Proposed: React Native (Expo) for iOS + Android from one codebase, with a responsive web view for the Partner so she never has to install anything.
+- **Client:** Web and phone from day one. Proposed: React Native (Expo) with Expo Router, which builds iOS, Android, and web from one codebase. The Partner can use the web version without installing anything.
+- **Built for one household, ready for many:** v1 serves Craig's household only, but the data model is multi-household (everything is scoped to a `household_id` with row-level security) so it can open to other husbands later without a rewrite.
 - **Backend:** Supabase (Postgres, auth, row-level security, edge functions) for speed of building.
 - **Notifications:** Expo push + scheduled jobs for nudges.
 - **AI:** Claude API for the coach chat, lesson personalization, and weekly summaries.
@@ -145,10 +147,9 @@ Supporting metrics:
 
 | Phase | Scope | Goal |
 |---|---|---|
-| **0. Prototype** | Web app, single user (Craig): audit, Load Map, owned responsibilities, daily lesson, reflection, notebook. | Dogfood for 4 weeks; validate the daily loop is useful. |
-| **1. MVP** | Mobile app, Partner invite + handoff + weekly check-in, nudges, 3 lesson tracks. | Validate Partner-reported load improves. |
+| **1. MVP (Craig's household)** | Web app **and** phone app (iOS + Android) from day one, one shared codebase. Learner: audit, Load Map, ownership plan, nudges, daily lesson, reflection, notebook. Partner: invite, audit, handoffs, weekly check-in. Launch domains: Kids, Meals, Gifts, Home admin, Social (shared). | Dogfood for 6–8 weeks; validate the daily loop and that Partner-reported load improves. |
 | **2. Coach** | AI coach chat, calendar integration, progress insights. | Deepen engagement and personalization. |
-| **3. Beyond** | Broader audience, more content tracks, smart calendar suggestions. | Decide whether this becomes a product for others. |
+| **3. Share with other husbands** | Multi-household onboarding, generic starter library, more content tracks, smart calendar suggestions. | Open to other couples once it works in Craig's household. |
 
 ## 12. Risks
 
@@ -158,13 +159,16 @@ Supporting metrics:
 - **Content credibility and IP.** Mitigation: original content inspired by cited frameworks; review licensing before using any named system.
 - **Sensitive situations.** Mitigation: AI coach safety guardrails and links to professional resources.
 
-## 13. Open questions for Craig
+## 13. Decisions made
 
-1. **Who is this for first?** Just you (a personal tool), or something you might share with other husbands later? This changes how much polish, onboarding, and content we need.
-2. **How involved is your wife?** Will she use the Partner side (audit, handoffs, weekly check-in), or should v1 work entirely solo?
-3. **Platform:** Is a web app fine for the prototype, or do you want a phone app from day one? iPhone, Android, or both?
-4. **Stack:** Any preferences? I proposed React Native/Expo + Supabase + Claude since you have Supabase connected.
-5. **Content source:** Should lessons be original, AI-generated and reviewed by you, or based on a specific book/framework you like (e.g., *Fair Play*)?
-6. **Your biggest gaps today:** Which domains feel most like hers right now (kids, meals, social calendar, gifts, home admin)? That shapes the starter library and first ownership plan.
-7. **Tone:** Earnest coach, buddy with jokes, or no-nonsense drill sergeant?
-8. **Kids:** Are there kids in the household? Several domains and templates depend on it.
+- **Audience:** Built for Craig first; designed to share with other husbands later (Phase 3).
+- **Partner involvement:** Craig's wife will use the Partner side (audit, handoffs, weekly check-in). Single-player mode stays as a fallback for future users.
+- **Platform:** Web and phone app in the first version.
+- **Launch domains:** Kids, Meals, Gifts & occasions, Home admin, and Social calendar (partly owned by Craig already).
+
+## 14. Open questions for Craig
+
+1. **Stack:** OK with React Native/Expo + Supabase + Claude? (Supabase is already connected to this project.)
+2. **Content source:** Should lessons be original, AI-generated and reviewed by you, or based on a specific book/framework you like (e.g., *Fair Play*)?
+3. **Tone:** Earnest coach, buddy with jokes, or no-nonsense drill sergeant?
+4. **Kids:** How many, and roughly what ages? This shapes the Kids starter templates (school forms, activities, pediatrician, etc.).
