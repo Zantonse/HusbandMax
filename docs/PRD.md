@@ -1,6 +1,6 @@
 # HusbandMax — Product Requirements Document
 
-**Status:** Draft v0.6
+**Status:** Draft v0.7
 **Owner:** Craig
 **Last updated:** 2026-10-16
 
@@ -174,7 +174,7 @@ Supporting metrics:
 
 ## 9. Platform and technical approach (proposed)
 
-- **Client:** Web and phone from day one. Proposed: React Native (Expo) with Expo Router, which builds iOS, Android, and web from one codebase. The Partner can use the web version without installing anything.
+- **Client:** Web and **Android** from day one (both Craig and his wife use Android phones). React Native (Expo) with Expo Router builds Android and web from one codebase, with iOS available later for Phase 3 at no extra engineering cost. For the household MVP, the Android app is installed directly from an Expo build (no Play Store needed, no fees); Play Store publishing ($25 one-time) can wait until sharing with others.
 - **Built for one household, ready for many:** v1 serves Craig's household only, but the data model is multi-household (all data lives under `households/{householdId}`, enforced by Firestore security rules) so it can open to other husbands later without a rewrite.
 - **Backend: Firebase** (decided). A hosted backend is needed because two people on separate devices share the same household data, and nudges must be sent on a schedule even when the app is closed. Firebase covers it with Firestore (database, live sync between both phones, offline cache), Firebase Auth (sign-in for Craig and his wife), Security Rules (keep the Learner's private notebook and reflections private), and scheduled Cloud Functions (nudges, weekly check-in prompts). Scheduled functions require the pay-as-you-go Blaze plan; at one household's usage this should stay within the free quota, but set a budget alert.
 - **Notifications:** Firebase Cloud Messaging (via Expo push) triggered by scheduled Cloud Functions.
@@ -193,7 +193,7 @@ Supporting metrics:
 
 | Phase | Scope | Goal |
 |---|---|---|
-| **1. MVP (Craig's household)** | Web app **and** phone app (iOS + Android) from day one, one shared codebase. Learner: audit, Load Map, ownership plan, nudges, daily lesson, reflection, notebook. Partner: invite, audit, handoffs, weekly check-in. Launch domains: Kids, Meals, Gifts, Home admin, Social (shared). | Dogfood for 6–8 weeks; validate the daily loop and that Partner-reported load improves. |
+| **1. MVP (Craig's household)** | Web app **and** Android app from day one, one shared codebase. Learner: audit, Load Map, ownership plan, nudges, daily lesson, reflection, notebook. Partner: invite, audit, handoffs, weekly check-in. Launch domains: Kids, Meals, Gifts, Home admin, Social (shared). | Dogfood for 6–8 weeks; validate the daily loop and that Partner-reported load improves. |
 | **2. Coach** | AI coach chat, calendar integration, progress insights. | Deepen engagement and personalization. |
 | **3. Share with other husbands** | Multi-household onboarding, generic starter library, more content tracks, smart calendar suggestions. | Open to other couples once it works in Craig's household. |
 
@@ -214,6 +214,7 @@ Supporting metrics:
 - **Household:** One child, age 2.
 - **Lessons:** Original curriculum, drafted with AI and reviewed by Craig.
 - **Tone:** Earnest coach.
+- **Phones:** Both use Android, so v1 targets Android + web; iOS deferred to Phase 3.
 - **Backend:** Firebase (Craig's free Supabase slot is already used by another app).
 
 ## 14. Open questions for Craig
